@@ -10,39 +10,67 @@
 
 #include "sdl_wrapper.hpp"
 
-/* animation data structure */
-struct Animation {
-    const size_t frame_duration;
-    const size_t frames;
-    const size_t first_frame_id;
-    size_t current_frame;
-    size_t frame_count;
-    size_t times_played;
-    Animation(size_t frame_duration, size_t frames, size_t first_frame_id):
-        frame_duration{frame_duration},
+using namespace SDL;
+
+struct TextureSequence {
+    size_t frames;
+    size_t first_frame_id;
+    TextureSequence(size_t frames, size_t first_frame_id):
         frames{frames},
-        first_frame_id{first_frame_id},
-        current_frame{0},
-        frame_count{0},
-        times_played{0}
-    {}
+        first_frame_id{first_frame_id}
+    { }
 };
 
-
-int SDL::WINDOW_WIDTH;
-int SDL::WINDOW_HEIGHT;
-int SDL::mouse_x;
-int SDL::mouse_y;
-
-
+/*** GLOBAL SDL STATE ***/
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static std::vector<SDL_Texture*> textures;
 static std::vector<Mix_Chunk*> sounds;
 static std::map<size_t, int> channels;
 static std::vector<SDL_Rect> dimensions;
-static std::vector<Animation> animations;
+static std::vector<TextureSequence> texture_sequences;
 static size_t current_texture;
+
+
+/*** ANIMATION IMPLEMENTATION ***/
+Animation::Animation(texture_sequence_handle ts, size_t frame_duration):
+    frame_duration{frame_duration},
+    ts{ts},
+    _current_frame{0},
+    frame_count{0},
+    _times_played{0},
+    _playing{true}
+{}
+
+void Animation::render(SDL_Rect* r, double angle, SDL_RendererFlip flip)
+{
+    SDL::render_texture(texture_sequences[ts].first_frame_id + _current_frame, r, angle, flip);
+    if (_playing) {
+        if (++frame_count % frame_duration == 0) {
+            if (_current_frame + 1 == texture_sequences[ts].frames) {
+                _current_frame = 0;
+                ++_times_played;
+            } else ++_current_frame;
+            frame_count = 0;
+        }
+    }
+}
+
+bool Animation::playing() const { return _playing; }
+void Animation::play() { _playing = true; }
+void Animation::pause() { _playing = false; }
+void Animation::set_frame(size_t frame_number) { _current_frame = frame_number; }
+size_t Animation::times_played() const { return _times_played; }
+size_t Animation::current_frame() const { return _current_frame; }
+int Animation::width() const { return texture_width(texture_sequences[ts].first_frame_id + _current_frame); }
+int Animation::height() const { return texture_height(texture_sequences[ts].first_frame_id + _current_frame); }
+/********************************/
+
+int SDL::WINDOW_WIDTH;
+int SDL::WINDOW_HEIGHT;
+int SDL::mouse_x;
+int SDL::mouse_y;
+
 
 /* TTF Font pointers for big and small versions of Mesmerize */
 static TTF_Font *big_font;
@@ -190,16 +218,11 @@ bool SDL::render_texture(size_t id, int x, int y, double angle)
     } else return false;
 }
 
-bool SDL::render_texture(size_t id, int x, int y, int w, int h, double angle, SDL_RendererFlip f)
+bool SDL::render_texture(size_t id, SDL_Rect* r, double angle, SDL_RendererFlip f)
 {
     size_t old_id = current_texture;
     if (set_texture(id)) {
-        SDL_Rect r = dimensions[current_texture];
-        r.x = x;
-        r.y = y;
-        r.w = w;
-        r.h = h;
-        SDL_RenderCopyEx(renderer, textures[current_texture], &dimensions[current_texture], &r,
+        SDL_RenderCopyEx(renderer, textures[current_texture], &dimensions[current_texture], r,
                          angle, NULL, f);
         current_texture = old_id;
         return true;
@@ -289,32 +312,13 @@ void SDL::stop_all_sounds()
     Mix_HaltChannel(-1);
 }
 
-size_t SDL::load_animation(const std::string& path, size_t frames, size_t frame_duration)
+size_t SDL::load_texture_sequence(const std::string& path, size_t frames)
 {
     size_t first_frame_id = SDL::load_texture(path + "1.png");
     for (unsigned int i = 2; i <= frames; ++i)
         SDL::load_texture(path + std::to_string(i) + ".png");
-    animations.emplace_back(frame_duration, frames, first_frame_id);
-    return animations.size() - 1;
-}
-
-size_t SDL::render_animation(size_t id, int x, int y)
-{
-    Animation& a = animations[id];
-    SDL::render_texture(a.first_frame_id + a.current_frame, x, y);
-    if (++a.frame_count % a.frame_duration == 0) {
-        if (a.current_frame + 1 == a.frames) {
-            a.current_frame = 0;
-            ++a.times_played;
-        } else ++a.current_frame;
-        a.frame_count = 0;
-    }
-    return a.times_played;
-}
-
-size_t SDL::times_played(size_t animation_id)
-{
-    return animations[animation_id].times_played;
+    texture_sequences.emplace_back(frames, first_frame_id);
+    return texture_sequences.size() - 1;
 }
 
 int SDL::texture_width(size_t id)
