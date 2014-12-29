@@ -42,6 +42,10 @@ AnimatedSprite::AnimatedSprite(SDL::Animation animation):
     rect {0, 0, animation.width(), animation.height()}
 { }
 
+AnimatedSprite::AnimatedSprite(SDL::texture_sequence_handle ts, size_t frame_duration):
+    AnimatedSprite {SDL::Animation {ts, frame_duration}}
+{ }
+
 void AnimatedSprite::draw(int x, int y)
 {
     rect.x = x;

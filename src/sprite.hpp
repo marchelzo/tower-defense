@@ -29,6 +29,7 @@ class AnimatedSprite {
     SDL_Rect rect;
 public:
     AnimatedSprite(SDL::Animation);
+    AnimatedSprite(SDL::texture_sequence_handle, size_t frame_duration);
     virtual void draw(int x, int y);
     void rotate(double);
     void set_angle(double);
