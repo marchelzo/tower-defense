@@ -45,16 +45,45 @@ int main(int argc, char *argv[])
     /* create an SDL_Event for polling events */
     SDL_Event e;
 
+    SDL::texture_handle grass_texture = SDL::load_texture("./assets/grass_tile.png");
+    SDL::texture_handle sand_path_texture = SDL::load_texture("./assets/sand_path_tile.png");
+    Sprite grass {grass_texture};
+    Sprite sand_path {sand_path_texture};
+
     /* game loop */
     while (true) {
         /* handle input */
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT)
                 goto end;
+            else if (e.type == SDL_KEYDOWN) {
+                switch (e.key.keysym.sym) {
+                case SDLK_LEFT:
+                    grass.flip_horizontally();
+                    break;
+                case SDLK_DOWN:
+                    grass.flip_vertically();
+                    break;
+                }
+            }
         }
 
         /* render output */
         SDL::render_clear();
+
+        /* draw some grass */
+        for (int x = 0; x < win_width; ++x)
+            for (int y = 0; y < win_height; ++y)
+                grass.draw(BLOCK_SIZE * x, BLOCK_SIZE * y);
+
+        /* draw the path */
+        sand_path.set_angle(0);
+        for (int x = 0; x < win_width / 2; ++x)
+            sand_path.draw(sand_path.get_width() * x, 6 * BLOCK_SIZE);
+        sand_path.set_angle(90);
+        for (int y = 6; y < win_height; ++y)
+            sand_path.draw(win_width / 2 * BLOCK_SIZE, y * sand_path.get_width() - 415);
+
         SDL::render_present();
     }
 
