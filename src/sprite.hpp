@@ -1,13 +1,15 @@
 #include "sdl_wrapper.hpp"
 
+#pragma once
+
 class Sprite {
     SDL::texture_handle t;
     double angle;
     SDL_RendererFlip flip;
-    SDL_Rect rect;
+    mutable SDL_Rect rect;
 public:
     Sprite(SDL::texture_handle);
-    void draw(int x, int y);
+    void draw(int x, int y) const;
     void rotate(double);
     void set_angle(double);
     double get_angle();
@@ -17,8 +19,8 @@ public:
     void flip_vertically();
     void set_width(int);
     void set_height(int);
-    int get_height();
-    int get_width();
+    int get_height() const;
+    int get_width() const;
     void scale(double);
 };
 
@@ -30,7 +32,7 @@ class AnimatedSprite {
 public:
     AnimatedSprite(SDL::Animation);
     AnimatedSprite(SDL::texture_sequence_handle, size_t frame_duration);
-    virtual void draw(int x, int y);
+    void draw(int x, int y);
     void rotate(double);
     void set_angle(double);
     double get_angle();

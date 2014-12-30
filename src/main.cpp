@@ -9,6 +9,8 @@
 
 #include "sdl_wrapper.hpp"
 #include "sprite.hpp"
+#include "camera.hpp"
+#include "textures.hpp"
 
 /* some constants */
 static int constexpr MIN_WIN_WIDTH  = 10;
@@ -17,6 +19,7 @@ static int constexpr MAX_WIN_WIDTH  = 100;
 static int constexpr MAX_WIN_HEIGHT = 80;
 static int constexpr BLOCK_SIZE     = 48;
 static std::string const GAME_TITLE {"Tower Defense!"};
+
 
 
 int main(int argc, char *argv[])
@@ -41,14 +44,18 @@ int main(int argc, char *argv[])
 
     /* width and height are valid, so we initialize SDL */
     SDL::init(BLOCK_SIZE * win_width, BLOCK_SIZE * win_height, GAME_TITLE);
+
+    /* initialize the game camera */
+    Camera::init(0, 0, 4000, 4000, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT);
+
+    /* load assets */
+    Textures::load();
     
     /* create an SDL_Event for polling events */
     SDL_Event e;
 
-    SDL::texture_handle grass_texture = SDL::load_texture("./assets/grass_tile.png");
-    SDL::texture_handle sand_path_texture = SDL::load_texture("./assets/sand_path_tile.png");
-    Sprite grass {grass_texture};
-    Sprite sand_path {sand_path_texture};
+    Sprite grass {Textures::GRASS_TEXTURE};
+    Sprite sand_path {Textures::SAND_TEXTURE};
 
     /* game loop */
     while (true) {
@@ -64,25 +71,34 @@ int main(int argc, char *argv[])
                 case SDLK_DOWN:
                     grass.flip_vertically();
                     break;
+                case SDLK_RIGHT:
+                    break;
+                case SDLK_UP:
+                    break;
+                case SDLK_h:
+                    Camera::center_on(0,0);
+                    break;
                 }
             }
         }
+
+        Camera::update();
 
         /* render output */
         SDL::render_clear();
 
         /* draw some grass */
-        for (int x = 0; x < win_width; ++x)
-            for (int y = 0; y < win_height; ++y)
-                grass.draw(BLOCK_SIZE * x, BLOCK_SIZE * y);
+        for (int x = 0; x < win_width + 1; ++x)
+            for (int y = 0; y < win_height + 1; ++y)
+                grass.draw(BLOCK_SIZE * x - Camera::x % BLOCK_SIZE, BLOCK_SIZE * y - Camera::y % BLOCK_SIZE);
 
         /* draw the path */
         sand_path.set_angle(0);
-        for (int x = 0; x < win_width / 2; ++x)
-            sand_path.draw(sand_path.get_width() * x, 6 * BLOCK_SIZE);
+        for (int x = 0; x < win_width; ++x)
+            sand_path.draw(sand_path.get_width() * x - Camera::x, 6 * BLOCK_SIZE - Camera::y);
         sand_path.set_angle(90);
         for (int y = 6; y < win_height; ++y)
-            sand_path.draw(win_width / 2 * BLOCK_SIZE, y * sand_path.get_width() - 415);
+            sand_path.draw(win_width / 2 * BLOCK_SIZE - Camera::x, y * sand_path.get_width() - 40 - Camera::y);
 
         SDL::render_present();
     }

@@ -8,7 +8,7 @@ Sprite::Sprite(SDL::texture_handle t):
     rect {0, 0, SDL::texture_width(t), SDL::texture_height(t)}
 { }
 
-void Sprite::draw(int x, int y)
+void Sprite::draw(int x, int y) const
 {
     rect.x = x;
     rect.y = y;
@@ -26,8 +26,8 @@ void Sprite::scale(double factor)
 }
 void Sprite::set_height(int height) { rect.h = height; }
 void Sprite::set_width(int width) { rect.w = width; }
-int Sprite::get_height() { return rect.h; }
-int Sprite::get_width() { return rect.w; }
+int Sprite::get_height() const { return rect.h; }
+int Sprite::get_width() const { return rect.w; }
 
 void Sprite::set_flip(SDL_RendererFlip f) { flip = f; }
 SDL_RendererFlip Sprite::get_flip() { return flip; }
