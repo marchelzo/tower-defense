@@ -6,7 +6,7 @@ class Enemy;
 #include "map.hpp"
 
 enum class Direction {
-    RIGHT, LEFT, UP, DOWN
+    RIGHT, LEFT, UP, DOWN, NONE
 };
 
 class Enemy {

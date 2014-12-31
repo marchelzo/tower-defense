@@ -1,7 +1,17 @@
 #include "enemy.hpp"
 
+static inline int round_to_closest(int k, int x)
+{
+    if (x % k >= k / 2)
+        return x + (k - x % k);
+    else
+        return x - (x % k);
+
+}
+
 Enemy::Enemy(Sprite sprite, int damage, int x, int y):
     sprite    {sprite},
+    direction {Direction::NONE},
     damage    {damage},
     x         {x},
     y         {y},
@@ -59,5 +69,11 @@ void Enemy::update(const Map& m)
 
     if (moved % 65 == 0)
 	m(y/64,x/64).affect(*this, m);
+
+    if (direction == Direction::UP || direction == Direction::DOWN)
+        x = round_to_closest(64, x);
+    else
+        y = round_to_closest(64, y);
+
     moved += 5;
 }
