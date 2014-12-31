@@ -65,35 +65,33 @@ static void spawned(Enemy& e, const Map& m)
     int x = e.get_x() / 64;
     int y = e.get_y() / 64;
 
-    if (x == 0) {
-        if (y == 0) {
-            if (m(x,y+1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::DOWN);
-            else
-                e.set_direction(Direction::RIGHT);
-        } else {
-            if (m(x,y+1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::DOWN);
-            else if (m(x,y-1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::UP);
-            else
-                e.set_direction(Direction::RIGHT);
-        }
-    } else {
-        if (y + 1 == m.height()) {
-            if (m(x,y-1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::UP);
-            else
-                e.set_direction(Direction::LEFT);
-        } else {
-            if (m(x,y-1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::UP);
-            else if (m(x,y+1).get_type() != TileType::GRASS)
-                e.set_direction(Direction::DOWN);
-            else
-                e.set_direction(Direction::LEFT);
-        }
+    bool below = y + 1 != m.height() && m(y+1,x).get_type() != TileType::GRASS;
+    bool above = y > 0               && m(y-1,x).get_type() != TileType::GRASS;
+    bool right = x + 1 != m.width()  && m(y,x+1).get_type() != TileType::GRASS;
+    bool left  = x > 0               && m(y,x-1).get_type() != TileType::GRASS;
+
+    if (left) {
+        e.set_direction(Direction::LEFT);
+        return;
     }
+
+    if (right) {
+        e.set_direction(Direction::RIGHT);
+        return;
+    }
+
+    if (above) {
+        e.set_direction(Direction::UP);
+        return;
+    }
+
+    if (below) {
+        e.set_direction(Direction::DOWN);
+        return;
+    }
+
+    fputs("Error: Invalid spawn position.\n", stderr);
+
 }
 
 static void turn_left(Enemy& e, const Map& m)

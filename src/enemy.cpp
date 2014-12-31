@@ -2,7 +2,7 @@
 
 static inline int round_to_closest(int k, int x)
 {
-    if (x % k >= k / 2)
+    if (x % k > k / 2)
         return x + (k - x % k);
     else
         return x - (x % k);
@@ -21,12 +21,12 @@ Enemy::Enemy(Sprite sprite, int damage, int x, int y):
 
 int Enemy::get_x() const
 {
-    return x;
+    return x + sprite.get_width() / 2;
 }
 
 int Enemy::get_y() const
 {
-    return y;
+    return y + sprite.get_height() / 2;
 }
 
 void Enemy::set_direction(Direction d)
@@ -68,7 +68,7 @@ void Enemy::update(const Map& m)
         x -= 5;
 
     if (moved % 65 == 0)
-	m(y/64,x/64).affect(*this, m);
+	m((y + sprite.get_height() / 2) / 64, (x + sprite.get_width() / 2) /64).affect(*this, m);
 
     if (direction == Direction::UP || direction == Direction::DOWN)
         x = round_to_closest(64, x);

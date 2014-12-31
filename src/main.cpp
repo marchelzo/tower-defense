@@ -15,8 +15,8 @@
 #include "map.hpp"
 
 /* some constants */
-static int constexpr MIN_WIN_WIDTH  = 10;
-static int constexpr MIN_WIN_HEIGHT = 10;
+static int constexpr MIN_WIN_WIDTH  = 8;
+static int constexpr MIN_WIN_HEIGHT = 5;
 static int constexpr MAX_WIN_WIDTH  = 100;
 static int constexpr MAX_WIN_HEIGHT = 80;
 static int constexpr BLOCK_SIZE     = 64;
@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Invalid dimensions: %d x %d\nPlease specify a width in [%d,%d] and a height in [%d,%d]\n", win_width, win_height,
                                                                                                                         MIN_WIN_WIDTH, MAX_WIN_WIDTH,
                                                                                                                         MIN_WIN_HEIGHT, MAX_WIN_HEIGHT);
+            exit(EXIT_FAILURE);
         }
     } else if (argc == 1) {
         win_width  = 18;
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/one.map"};
+    Map map {"./maps/test.map"};
 
     /* initialize the game camera */
     Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT);
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
     SDL_Event e;
 
     std::vector<Enemy> es;
-    map.spawn_enemies(1, es);
+    map.spawn_enemies(12, es);
 
     /* game loop */
     while (true) {
