@@ -15,8 +15,9 @@ class Enemy {
     const int damage;
     int x;
     int y;
+    int moved;
 public:
-    Enemy(Sprite sprite, int damage, Direction direction);
+    Enemy(Sprite sprite, int damage, int x, int y);
     void set_direction(Direction);
     void turn_around();
     Direction get_direction() const;

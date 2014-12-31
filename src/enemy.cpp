@@ -1,22 +1,22 @@
 #include "enemy.hpp"
 
-Enemy::Enemy(Sprite sprite, int damage, Direction direction):
+Enemy::Enemy(Sprite sprite, int damage, int x, int y):
     sprite    {sprite},
-    direction {direction},
     damage    {damage},
-    x         {0},
-    y         {0}
+    x         {x},
+    y         {y},
+    moved     {0}
 {
 }
 
 int Enemy::get_x() const
 {
-    return (x + sprite.get_width() / 2) / 48;
+    return x;
 }
 
 int Enemy::get_y() const
 {
-    return (y + sprite.get_height() / 2) / 48;
+    return y;
 }
 
 void Enemy::set_direction(Direction d)
@@ -57,5 +57,7 @@ void Enemy::update(const Map& m)
     else if (direction == Direction::LEFT)
         x -= 5;
 
-    m(y/64,x/64).affect(*this, m);
+    if (moved % 65 == 0)
+	m(y/64,x/64).affect(*this, m);
+    moved += 5;
 }

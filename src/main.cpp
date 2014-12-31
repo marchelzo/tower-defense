@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
     /* create an SDL_Event for polling events */
     SDL_Event e;
 
-    Enemy enemy {Sprite{Textures::RED_SPHERE}, 40, Direction::RIGHT};
+    std::vector<Enemy> es;
+    map.spawn_enemies(1, es);
 
     /* game loop */
     while (true) {
@@ -82,7 +83,8 @@ int main(int argc, char *argv[])
         }
 
         /* update enemies */
-        enemy.update(map);
+	for (auto& enemy : es)
+	    enemy.update(map);
 
         Camera::update();
 
@@ -103,7 +105,8 @@ int main(int argc, char *argv[])
             }
         }
 
-        enemy.draw(-Camera::x, -Camera::y);
+	for (auto& enemy : es)
+	    enemy.draw(-Camera::x, -Camera::y);
 
         SDL::render_present();
     }

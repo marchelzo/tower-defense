@@ -7,6 +7,7 @@
 #include "tile.hpp"
 #include "sprite.hpp"
 #include "textures.hpp"
+#include "enemy.hpp"
 
 static bool sprites_loaded;
 
@@ -61,8 +62,8 @@ static void load_map_sprites()
 
 static void spawned(Enemy& e, const Map& m)
 {
-    int x = e.get_x() / 48;
-    int y = e.get_y() / 48;
+    int x = e.get_x() / 64;
+    int y = e.get_y() / 64;
 
     if (x == 0) {
         if (y == 0) {
@@ -184,6 +185,7 @@ Map::Map(const std::string& file_path):
                 break;
             case '@':
                 tiles[y].emplace_back(spawn.get(), spawned, TileType::SPAWN);
+		spawns.push_back({ .x = x, .y = y });
                 break;
             case '*':
                 tiles[y].emplace_back(home.get(), no_op, TileType::HOME);
@@ -259,4 +261,12 @@ int Map::width() const
 int Map::height() const
 {
     return tiles.size();
+}
+
+void Map::spawn_enemies(int n, std::vector<Enemy>& es)
+{
+    while (n --> 0) {
+	coord c = spawns[rand() % spawns.size()];
+	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 64, c.y * 64);
+    }
 }
