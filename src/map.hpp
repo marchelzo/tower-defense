@@ -13,7 +13,7 @@ class Map {
     };
     std::vector<std::vector<Tile>> tiles;
     std::vector<coord> spawns;
-    coord home;
+    coord home_coord;
 public:
     Map(const std::string& file_path);
     const Tile& operator()(int, int) const;

@@ -8,6 +8,12 @@ namespace Textures {
     /*** TEXTURES ***/
     extern SDL::texture_handle GRASS_TEXTURE;
     extern SDL::texture_handle SAND_TEXTURE;
+    extern SDL::texture_handle SAND_CORNER_TEXTURE;
+    extern SDL::texture_handle SAND_3WAY_TEXTURE;
+    extern SDL::texture_handle SAND_4WAY_TEXTURE;
+    extern SDL::texture_handle HOME_TEXTURE;
+    extern SDL::texture_handle SPAWN_TEXTURE;
+    extern SDL::texture_handle RED_SPHERE;
     /*** ........ ***/
     /****************/
 

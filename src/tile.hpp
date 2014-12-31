@@ -16,12 +16,14 @@ enum class TileType {
 };
 
 class Tile {
-    const Sprite& sprite;
+    const Sprite* sprite;
     const std::function<void(Enemy&, const Map&)> effect;
     const TileType type;
 public:
-    Tile(const Sprite& sprite, std::function<void(Enemy&, const Map&)> effect, TileType type);
-    void draw(int x, int y);
-    void affect(Enemy& e, Map& m);
+    Tile(const Sprite* sprite, std::function<void(Enemy&, const Map&)> effect, TileType type);
+    void draw(int x, int y) const;
+    void affect(Enemy& e, const Map& m) const;
     TileType get_type() const;
+    const Sprite* get_sprite() const;
+    void set_sprite(const Sprite* s);
 };

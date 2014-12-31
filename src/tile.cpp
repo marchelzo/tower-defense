@@ -6,18 +6,18 @@
 #include "map.hpp"
 
 
-Tile::Tile(const Sprite& sprite, std::function<void(Enemy&, const Map&)> effect, TileType type):
+Tile::Tile(const Sprite* sprite, std::function<void(Enemy&, const Map&)> effect, TileType type):
     sprite {sprite},
     effect {effect},
     type   {type}
 { }
 
-void Tile::draw(int x, int y)
+void Tile::draw(int x, int y) const
 {
-    sprite.draw(x,y);
+    sprite->draw(x,y);
 }
 
-void Tile::affect(Enemy& e, Map& m)
+void Tile::affect(Enemy& e, const Map& m) const
 {
     effect(e, m);
 }
@@ -25,4 +25,14 @@ void Tile::affect(Enemy& e, Map& m)
 TileType Tile::get_type() const
 {
     return type;
+}
+
+const Sprite* Tile::get_sprite() const
+{
+    return sprite;
+}
+
+void Tile::set_sprite(const Sprite* s)
+{
+    sprite = s;
 }
