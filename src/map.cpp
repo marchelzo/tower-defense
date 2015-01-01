@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdio>
 #include <memory>
+#include <algorithm>
 
 #include "map.hpp"
 #include "tile.hpp"
@@ -132,6 +133,12 @@ static void turn_random(Enemy& e, const Map& m)
     if (right && e.get_direction() != Direction::LEFT) ds.push_back(Direction::RIGHT);
     if (left  && e.get_direction() != Direction::RIGHT) ds.push_back(Direction::LEFT);
 
+    if (e.must_turn()) {
+        auto pos = std::find(ds.begin(), ds.end(), e.get_direction());
+        if (pos != ds.end())
+            ds.erase(pos);
+    }
+
     if (ds.size() == 0) {
         e.turn_around();
     } else {
@@ -146,9 +153,14 @@ static void inflict_damage(Enemy& e, const Map& m)
     e.kill();
 }
 
+static void force_next_turn(Enemy& e, const Map& m)
+{
+    e.force_next_turn();
+}
+
 Map::Map(const std::string& file_path):
-    tiles {},
-    spawns {},
+    tiles      {},
+    spawns     {},
     home_coord {}
 {
     if (!sprites_loaded)
@@ -200,7 +212,9 @@ Map::Map(const std::string& file_path):
             case '%':
                 tiles[y].emplace_back(nullptr, turn_random, TileType::SAND);
                 break;
-
+            case '!':
+                tiles[y].emplace_back(nullptr, force_next_turn, TileType::SAND);
+                break;
             }
             ++x;
         }
@@ -272,6 +286,6 @@ void Map::spawn_enemies(int n, std::vector<Enemy>& es)
 {
     while (n --> 0) {
 	coord c = spawns[rand() % spawns.size()];
-	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 64, c.y * 64);
+	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 64, c.y * 64, rand() % 3 + 2);
     }
 }

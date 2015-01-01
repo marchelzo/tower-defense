@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
     /* initialize the game camera */
     Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT, Camera::Type::Keyboard);
 
-    Player::init(1000000, 1000);
+    Player::init(41, 1000);
 
     std::vector<Enemy> es;
-    map.spawn_enemies(100, es);
+    map.spawn_enemies(2, es);
 
     /* create an SDL_Event for polling events */
     SDL_Event e;

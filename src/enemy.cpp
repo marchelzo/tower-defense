@@ -9,14 +9,16 @@ static inline int round_to_closest(int k, int x)
 
 }
 
-Enemy::Enemy(Sprite sprite, int damage, int x, int y):
-    sprite    {sprite},
-    direction {Direction::NONE},
-    damage    {damage},
-    x         {x},
-    y         {y},
-    moved     {0},
-    alive     {true}
+Enemy::Enemy(Sprite sprite, int damage, int x, int y, int speed):
+    sprite                {sprite},
+    direction             {Direction::NONE},
+    speed                 {speed},
+    damage                {damage},
+    x                     {x},
+    y                     {y},
+    moved                 {0},
+    alive                 {true},
+    must_change_direction {false}
 {
 }
 
@@ -60,23 +62,27 @@ void Enemy::draw(int x_off, int y_off) const
 void Enemy::update(const Map& m)
 {
     if (direction == Direction::DOWN)
-        y += 5;
+        y += speed;
     else if (direction == Direction::UP)
-        y -= 5;
+        y -= speed;
     else if (direction == Direction::RIGHT)
-        x += 5;
+        x += speed;
     else if (direction == Direction::LEFT)
-        x -= 5;
+        x -= speed;
 
-    if (moved % 65 == 0)
+    if (moved > 64)
+        moved = 0;
+
+    if (moved == 0) {
 	m((y + sprite.get_height() / 2) / 64, (x + sprite.get_width() / 2) /64).affect(*this, m);
+    }
 
     if (direction == Direction::UP || direction == Direction::DOWN)
         x = round_to_closest(64, x);
     else
         y = round_to_closest(64, y);
 
-    moved += 5;
+    moved += speed;
 }
 
 bool Enemy::is_alive() const
@@ -92,4 +98,14 @@ int Enemy::power() const
 void Enemy::kill()
 {
     alive = false;
+}
+
+void Enemy::force_next_turn()
+{
+    must_change_direction = true;
+}
+
+bool Enemy::must_turn() const
+{
+    return must_change_direction;
 }
