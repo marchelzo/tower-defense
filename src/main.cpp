@@ -57,6 +57,18 @@ int main(int argc, char *argv[])
     /* load the map */
     Map map {"./maps/test.map"};
 
+    /* make sure the window is not bigger than the actual map */
+    if (win_width > map.width()) {
+        fprintf(stderr, "Note: Specified width was bigger than the map size. Changing width to %d from %d.\n", map.width(), win_width);
+        win_width = map.width();
+    }
+    if (win_height > map.height()) {
+        fprintf(stderr, "Note: Specified height was bigger than the map size. Changing height to %d from %d.\n", map.height(), win_height);
+        win_height = map.height();
+    }
+
+    SDL::set_window_size(win_width * 64, win_height * 64);
+
     /* initialize the game camera */
     Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT);
 
@@ -64,7 +76,7 @@ int main(int argc, char *argv[])
     SDL_Event e;
 
     std::vector<Enemy> es;
-    map.spawn_enemies(12, es);
+    map.spawn_enemies(100, es);
 
     /* game loop */
     while (true) {
@@ -101,6 +113,7 @@ int main(int argc, char *argv[])
         /* draw the dirt */
         for (int x = 0; x < win_width + 1; ++x) {
             for (int y = 0; y < win_height + 1; ++y) {
+                if (y == map.height() || x == map.width()) continue;
                 if (map(y + Camera::y / BLOCK_SIZE, x + Camera::x / BLOCK_SIZE).get_type() != TileType::GRASS)
                 map(y + Camera::y / BLOCK_SIZE, x + Camera::x / BLOCK_SIZE).draw(BLOCK_SIZE * x - Camera::x % BLOCK_SIZE, BLOCK_SIZE * y - Camera::y % BLOCK_SIZE);
             }

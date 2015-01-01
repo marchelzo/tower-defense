@@ -147,6 +147,13 @@ void SDL::quit()
     SDL_Quit();
 }
 
+void SDL::set_window_size(int w, int h)
+{
+    SDL_SetWindowSize(window, w, h);
+    WINDOW_WIDTH  = w;
+    WINDOW_HEIGHT = h;
+}
+
 void SDL::get_mouse_state()
 {
     SDL_GetMouseState(&mouse_x, &mouse_y);

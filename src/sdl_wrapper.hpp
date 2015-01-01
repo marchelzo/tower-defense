@@ -40,6 +40,7 @@ namespace SDL {
 
     bool init(int w, int h, const std::string& title);
     void quit();
+    void set_window_size(int w, int h);
     extern int WINDOW_WIDTH;
     extern int WINDOW_HEIGHT;
     extern int mouse_x;

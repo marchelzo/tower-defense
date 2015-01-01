@@ -209,10 +209,10 @@ Map::Map(const std::string& file_path):
         for (unsigned int x = 0; x < tiles[y].size(); ++x) {
             if (tiles[y][x].get_sprite()) continue;
 
-            bool below = y + 1 != tiles.size() && tiles[y+1][x].get_type() != TileType::GRASS;
-            bool above = y > 0                 && tiles[y-1][x].get_type() != TileType::GRASS;
-            bool right = x + 1 != tiles.size() && tiles[y][x+1].get_type() != TileType::GRASS;
-            bool left  = x > 0                 && tiles[y][x-1].get_type() != TileType::GRASS;
+            bool below = y + 1 != tiles.size()    && tiles[y+1][x].get_type() != TileType::GRASS;
+            bool above = y > 0                    && tiles[y-1][x].get_type() != TileType::GRASS;
+            bool right = x + 1 != tiles[y].size() && tiles[y][x+1].get_type() != TileType::GRASS;
+            bool left  = x > 0                    && tiles[y][x-1].get_type() != TileType::GRASS;
 
             if (below) {
                 if (right) {
