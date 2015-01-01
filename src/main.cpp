@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/two.map"};
+    Map map {"./maps/test.map"};
 
     /* make sure the window is not bigger than the actual map */
     if (win_width > map.width()) {
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     SDL::set_window_size(win_width * 64, win_height * 64);
 
     /* initialize the game camera */
-    Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT);
+    Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT, Camera::Type::Keyboard);
 
     Player::init(1000000, 1000);
 

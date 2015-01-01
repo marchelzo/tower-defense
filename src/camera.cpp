@@ -1,3 +1,5 @@
+#include <SDL2/SDL.h>
+
 #include "camera.hpp"
 #include "sdl_wrapper.hpp"
 
@@ -5,6 +7,9 @@ static float constexpr THRESHOLD       = 0.4;
 static float constexpr SCROLL_SPEED    = 1000;
 static int constexpr MIN_SCROLL_AMOUNT = 6;
 static int constexpr MAX_SCROLL_AMOUNT = 12;
+static int constexpr KBD_SPEED         = 7;
+
+static void (*update_function)();
 
 enum direction_t {
     LEFT, RIGHT, UP, DOWN, NONE
@@ -35,22 +40,7 @@ static void clip_camera()
     if (Camera::y + CAM_H > MAX_Y) Camera::y = MAX_Y - CAM_H;
 }
 
-void Camera::init(int min_x, int min_y, int max_x, int max_y, int w, int h)
-{
-    MIN_X = min_x;
-    MIN_Y = min_y;
-
-    MAX_X = max_x;
-    MAX_Y = max_y;
-
-    CAM_W = w;
-    CAM_H = h;
-
-    Camera::x = 0;
-    Camera::y = 0;
-}
-
-void Camera::update()
+static void mouse_update()
 {
     SDL::get_mouse_state();
 
@@ -80,6 +70,47 @@ void Camera::update()
     }
 
     clip_camera();
+}
+
+static void keyboard_update()
+{
+    const Uint8* keys = SDL_GetKeyboardState(nullptr);
+
+    if (keys[SDL_SCANCODE_S])
+        Camera::y += KBD_SPEED;
+    if (keys[SDL_SCANCODE_W])
+        Camera::y -= KBD_SPEED;
+    if (keys[SDL_SCANCODE_D])
+        Camera::x += KBD_SPEED;
+    if (keys[SDL_SCANCODE_A])
+        Camera::x -= KBD_SPEED;
+
+    clip_camera();
+}
+
+void Camera::init(int min_x, int min_y, int max_x, int max_y, int w, int h, Type t)
+{
+    MIN_X = min_x;
+    MIN_Y = min_y;
+
+    MAX_X = max_x;
+    MAX_Y = max_y;
+
+    CAM_W = w;
+    CAM_H = h;
+
+    Camera::x = 0;
+    Camera::y = 0;
+
+    if (t == Type::Keyboard)
+        update_function = keyboard_update;
+    else
+        update_function = mouse_update;
+}
+
+void Camera::update()
+{
+    update_function();
 }
 
 void Camera::set_pos(int x, int y)
