@@ -15,7 +15,8 @@ Enemy::Enemy(Sprite sprite, int damage, int x, int y):
     damage    {damage},
     x         {x},
     y         {y},
-    moved     {0}
+    moved     {0},
+    alive     {true}
 {
 }
 
@@ -76,4 +77,19 @@ void Enemy::update(const Map& m)
         y = round_to_closest(64, y);
 
     moved += 5;
+}
+
+bool Enemy::is_alive() const
+{
+    return alive;
+}
+
+int Enemy::power() const
+{
+    return damage;
+}
+
+void Enemy::kill()
+{
+    alive = false;
 }

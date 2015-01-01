@@ -8,6 +8,7 @@
 #include "sprite.hpp"
 #include "textures.hpp"
 #include "enemy.hpp"
+#include "player.hpp"
 
 static bool sprites_loaded;
 
@@ -43,7 +44,7 @@ static void load_map_sprites()
     sand_v->rotate(90);
     sand_corner_top_right = std::make_unique<Sprite>(Textures::SAND_CORNER_TEXTURE);
     sand_corner_top_left = std::make_unique<Sprite>(Textures::SAND_CORNER_TEXTURE);
-    sand_corner_top_left->rotate(90);
+    sand_corner_top_left->rotate(270);
     sand_corner_bottom_right = std::make_unique<Sprite>(Textures::SAND_CORNER_TEXTURE);
     sand_corner_bottom_right->rotate(90);
     sand_corner_bottom_left = std::make_unique<Sprite>(Textures::SAND_CORNER_TEXTURE);
@@ -139,6 +140,12 @@ static void turn_random(Enemy& e, const Map& m)
 
 }
 
+static void inflict_damage(Enemy& e, const Map& m)
+{
+    Player::hp -= e.power();
+    e.kill();
+}
+
 Map::Map(const std::string& file_path):
     tiles {},
     spawns {},
@@ -186,7 +193,7 @@ Map::Map(const std::string& file_path):
 		spawns.push_back({ .x = x, .y = y });
                 break;
             case '*':
-                tiles[y].emplace_back(home.get(), no_op, TileType::HOME);
+                tiles[y].emplace_back(home.get(), inflict_damage, TileType::HOME);
                 home_coord.x = x;
                 home_coord.y = y;
                 break;

@@ -16,6 +16,7 @@ class Enemy {
     int x;
     int y;
     int moved;
+    bool alive;
 public:
     Enemy(Sprite sprite, int damage, int x, int y);
     void set_direction(Direction);
@@ -25,4 +26,7 @@ public:
     int get_y() const;
     void draw(int, int) const;
     void update(const Map& m);
+    bool is_alive() const;
+    int power() const;
+    void kill();
 };

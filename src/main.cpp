@@ -13,6 +13,7 @@
 #include "camera.hpp"
 #include "textures.hpp"
 #include "map.hpp"
+#include "player.hpp"
 
 /* some constants */
 static int constexpr MIN_WIN_WIDTH  = 8;
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/test.map"};
+    Map map {"./maps/two.map"};
 
     /* make sure the window is not bigger than the actual map */
     if (win_width > map.width()) {
@@ -72,14 +73,16 @@ int main(int argc, char *argv[])
     /* initialize the game camera */
     Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT);
 
-    /* create an SDL_Event for polling events */
-    SDL_Event e;
+    Player::init(1000000, 1000);
 
     std::vector<Enemy> es;
     map.spawn_enemies(100, es);
 
+    /* create an SDL_Event for polling events */
+    SDL_Event e;
+
     /* game loop */
-    while (true) {
+    while (Player::hp > 0) {
         /* handle input */
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT)
@@ -96,8 +99,9 @@ int main(int argc, char *argv[])
         }
 
         /* update enemies */
-	for (auto& enemy : es)
-	    enemy.update(map);
+	for (auto& e : es)
+            if (e.is_alive())
+                e.update(map);
 
         Camera::update();
 
@@ -119,8 +123,9 @@ int main(int argc, char *argv[])
             }
         }
 
-	for (auto& enemy : es)
-	    enemy.draw(-Camera::x, -Camera::y);
+	for (auto& e : es)
+            if (e.is_alive())
+                e.draw(-Camera::x, -Camera::y);
 
         SDL::render_present();
     }
