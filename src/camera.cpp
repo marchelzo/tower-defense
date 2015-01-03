@@ -145,19 +145,22 @@ void Camera::set_pos(int x, int y)
 
 void Camera::center_on(int x, int y)
 {
-    Camera::x = x - (int) (double) SDL::WINDOW_WIDTH / 2.0;
-    Camera::y = y - (int) (double) SDL::WINDOW_HEIGHT / 2.0;
+    Camera::x = x * _zoom - width  / 2.0;
+    Camera::y = y * _zoom - height / 2.0;
     clip_camera();
 }
 
 void Camera::zoom(double k)
 {
     SDL::get_mouse_state();
-    //Camera::x = _zoom * (Camera::x + SDL::mouse_x) / (_zoom + k);
-    //Camera::y = _zoom * (Camera::y + SDL::mouse_y) / (_zoom + k);
-    _zoom += k;
 
+    int x = (Camera::x + SDL::mouse_x) / _zoom;
+    int y = (Camera::y + SDL::mouse_y) / _zoom;
+
+    _zoom += k;
     normalize_zoom();
+
+    center_on(x, y);
     clip_camera();
 }
 
