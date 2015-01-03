@@ -10,6 +10,7 @@ class Sprite {
 public:
     Sprite(SDL::texture_handle);
     void draw(int x, int y) const;
+    void draw(int x, int y, double scale) const;
     void rotate(double);
     void set_angle(double);
     double get_angle();

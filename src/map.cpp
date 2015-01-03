@@ -64,8 +64,8 @@ static void load_map_sprites()
 
 static void spawned(Enemy& e, const Map& m)
 {
-    int x = e.get_x() / 64;
-    int y = e.get_y() / 64;
+    int x = e.get_x() / 48;
+    int y = e.get_y() / 48;
 
     bool below = y + 1 != m.height() && m(y+1,x).get_type() != TileType::GRASS;
     bool above = y > 0               && m(y-1,x).get_type() != TileType::GRASS;
@@ -118,8 +118,8 @@ static void turn_down(Enemy& e, const Map& m)
 
 static void turn_random(Enemy& e, const Map& m)
 {
-    int x = e.get_x() / 64;
-    int y = e.get_y() / 64;
+    int x = e.get_x() / 48;
+    int y = e.get_y() / 48;
 
     std::vector<Direction> ds;
 
@@ -286,6 +286,6 @@ void Map::spawn_enemies(int n, std::vector<Enemy>& es)
 {
     while (n --> 0) {
 	coord c = spawns[rand() % spawns.size()];
-	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 64, c.y * 64, rand() % 3 + 2);
+	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 48, c.y * 48, rand() % 3 + 2);
     }
 }

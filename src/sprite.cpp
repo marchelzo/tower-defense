@@ -21,8 +21,8 @@ double Sprite::get_angle() { return angle; }
 
 void Sprite::scale(double factor)
 {
-    rect.w = (int) (double) rect.w * factor;
-    rect.h = (int) (double) rect.h * factor;
+    rect.w = (int) ((double) rect.w * factor);
+    rect.h = (int) ((double) rect.h * factor);
 }
 void Sprite::set_height(int height) { rect.h = height; }
 void Sprite::set_width(int width) { rect.w = width; }
@@ -33,6 +33,20 @@ void Sprite::set_flip(SDL_RendererFlip f) { flip = f; }
 SDL_RendererFlip Sprite::get_flip() { return flip; }
 void Sprite::flip_horizontally() { flip = static_cast<SDL_RendererFlip>(flip ^ SDL_FLIP_HORIZONTAL); }
 void Sprite::flip_vertically() { flip = static_cast<SDL_RendererFlip>(flip ^ SDL_FLIP_VERTICAL); }
+
+void Sprite::draw(int x, int y, double scale) const
+{
+    SDL_Rect r = rect;
+    r.w = (int) ((double) r.w * scale);
+    r.h = (int) ((double) r.h * scale);
+    r.x = x;
+    r.y = y;
+    SDL::render_texture(t, &r, angle, flip);
+}
+
+
+
+
 
 
 AnimatedSprite::AnimatedSprite(SDL::Animation animation):

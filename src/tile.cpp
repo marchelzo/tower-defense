@@ -17,6 +17,11 @@ void Tile::draw(int x, int y) const
     sprite->draw(x,y);
 }
 
+void Tile::draw(int x, int y, double scale) const
+{
+    sprite->draw(x, y, scale);
+}
+
 void Tile::affect(Enemy& e, const Map& m) const
 {
     effect(e, m);

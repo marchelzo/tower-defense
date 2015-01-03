@@ -14,16 +14,20 @@
 #include "textures.hpp"
 #include "map.hpp"
 #include "player.hpp"
+#include "game.hpp"
 
 /* some constants */
 static int constexpr MIN_WIN_WIDTH  = 8;
 static int constexpr MIN_WIN_HEIGHT = 5;
 static int constexpr MAX_WIN_WIDTH  = 100;
 static int constexpr MAX_WIN_HEIGHT = 80;
-static int constexpr BLOCK_SIZE     = 64;
 static std::string const GAME_TITLE {"Tower Defense!"};
 
+int constexpr Game::BLOCK_SIZE = 48;
+int Game::MAP_WIDTH;
+int Game::MAP_HEIGHT;
 
+using namespace Game;
 
 int main(int argc, char *argv[])
 {
@@ -56,7 +60,7 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/test.map"};
+    Map map {"./maps/one.map"};
 
     /* make sure the window is not bigger than the actual map */
     if (win_width > map.width()) {
@@ -68,18 +72,24 @@ int main(int argc, char *argv[])
         win_height = map.height();
     }
 
-    SDL::set_window_size(win_width * 64, win_height * 64);
+    MAP_WIDTH  = map.width();
+    MAP_HEIGHT = map.height();
+
+    SDL::set_window_size(win_width * BLOCK_SIZE, win_height * BLOCK_SIZE);
 
     /* initialize the game camera */
-    Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1, SDL::WINDOW_WIDTH, SDL::WINDOW_HEIGHT, Camera::Type::Keyboard);
+    Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1,
+            (int) (SDL::WINDOW_WIDTH * 0.7), SDL::WINDOW_HEIGHT, Camera::Type::Keyboard);
 
-    Player::init(41, 1000);
+    Player::init(99999, 1000);
 
     std::vector<Enemy> es;
-    map.spawn_enemies(2, es);
+    map.spawn_enemies(1, es);
 
     /* create an SDL_Event for polling events */
     SDL_Event e;
+
+    Sprite grass {Textures::GRASS_TEXTURE};
 
     /* game loop */
     while (Player::hp > 0) {
@@ -87,14 +97,8 @@ int main(int argc, char *argv[])
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT)
                 goto end;
-            else if (e.type == SDL_KEYDOWN) {
-                switch (e.key.keysym.sym) {
-                case SDLK_UP:
-                    break;
-                case SDLK_h:
-                    Camera::center_on(0,0);
-                    break;
-                }
+            else if (e.type == SDL_MOUSEWHEEL) {
+                    Camera::zoom(e.wheel.y * 0.1);
             }
         }
 
@@ -108,24 +112,38 @@ int main(int argc, char *argv[])
         /* render output */
         SDL::render_clear();
 
-        /* fill with grass first */
-        for (int x = 0; x < win_width + 1; ++x)
-            for (int y = 0; y < win_height + 1; ++y)
-                SDL::render_texture(Textures::GRASS_TEXTURE, x * BLOCK_SIZE - Camera::x % BLOCK_SIZE,
-                                        y * BLOCK_SIZE - Camera::y % BLOCK_SIZE);
+        int block_size = Camera::zoom_amount() * BLOCK_SIZE;
+        int x_off = Camera::x % block_size;
+        int y_off = Camera::y % block_size;
 
-        /* draw the dirt */
-        for (int x = 0; x < win_width + 1; ++x) {
-            for (int y = 0; y < win_height + 1; ++y) {
-                if (y == map.height() || x == map.width()) continue;
-                if (map(y + Camera::y / BLOCK_SIZE, x + Camera::x / BLOCK_SIZE).get_type() != TileType::GRASS)
-                map(y + Camera::y / BLOCK_SIZE, x + Camera::x / BLOCK_SIZE).draw(BLOCK_SIZE * x - Camera::x % BLOCK_SIZE, BLOCK_SIZE * y - Camera::y % BLOCK_SIZE);
+        for (int y = 0; y < Camera::height / block_size + 2; ++y) {
+            for (int x = 0; x < Camera::width / block_size + 2; ++x) {
+
+                int x_pos = block_size * x - x_off;
+                int y_pos = block_size * y - y_off;
+
+                grass.draw(x_pos, y_pos, Camera::zoom_amount());
+
+                int ty = y + Camera::y / block_size;
+                int tx = x + Camera::x / block_size;
+
+                if (ty >= map.height() || tx >= map.width()) continue;
+                if (ty < 0             || tx < 0           ) continue;
+
+                const Tile& t = map(ty,tx);
+
+                if (t.get_type() != TileType::GRASS) {
+                    t.draw(x_pos, y_pos, Camera::zoom_amount());
+                }
             }
         }
 
 	for (auto& e : es)
             if (e.is_alive())
-                e.draw(-Camera::x, -Camera::y);
+                e.draw();
+
+        SDL_Rect r = { Camera::width, 0, SDL::WINDOW_WIDTH - Camera::width, SDL::WINDOW_HEIGHT };
+        SDL::render_rect(&r, 102, 49, 60, 255);
 
         SDL::render_present();
     }

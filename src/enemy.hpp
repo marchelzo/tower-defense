@@ -28,6 +28,8 @@ public:
     int get_x() const;
     int get_y() const;
     void draw(int, int) const;
+    void draw(int, int, double scale) const;
+    void draw() const;
     void update(const Map& m);
     bool is_alive() const;
     int power() const;

@@ -2,9 +2,12 @@
 
 #include "camera.hpp"
 #include "sdl_wrapper.hpp"
+#include "game.hpp"
 
-static float constexpr THRESHOLD       = 0.4;
-static float constexpr SCROLL_SPEED    = 1000;
+using namespace Camera;
+
+static double constexpr THRESHOLD       = 0.4;
+static double constexpr SCROLL_SPEED    = 1000;
 static int constexpr MIN_SCROLL_AMOUNT = 6;
 static int constexpr MAX_SCROLL_AMOUNT = 12;
 static int constexpr KBD_SPEED         = 7;
@@ -28,16 +31,18 @@ static int MIN_Y;
 static int MAX_X;
 static int MAX_Y;
 
-static int CAM_W;
-static int CAM_H;
+int Camera::width;
+int Camera::height;
+
+static double _zoom;
 
 static void clip_camera()
 {
     /* make sure the camera stays within the max range */
-    if (Camera::x < 0) Camera::x = 0;
-    if (Camera::y < 0) Camera::y = 0;
-    if (Camera::x + CAM_W > MAX_X) Camera::x = MAX_X - CAM_W;
-    if (Camera::y + CAM_H > MAX_Y) Camera::y = MAX_Y - CAM_H;
+    if (Camera::x < MIN_X) Camera::x = MIN_X;
+    if (Camera::y < MIN_Y) Camera::y = MIN_Y;
+    if (Camera::x + width >= Game::MAP_WIDTH * ((int) (Game::BLOCK_SIZE * _zoom))) Camera::x = Game::MAP_WIDTH * ((int) (Game::BLOCK_SIZE * _zoom)) - width;
+    if (Camera::y + height >= Game::MAP_HEIGHT * ((int) (Game::BLOCK_SIZE * _zoom))) Camera::y = Game::MAP_HEIGHT * ((int) (Game::BLOCK_SIZE * _zoom)) - height;
 }
 
 static void mouse_update()
@@ -47,25 +52,25 @@ static void mouse_update()
     direction_t scroll_x {NONE};
     direction_t scroll_y {NONE};
 
-    if (SDL::mouse_x > (float) SDL::WINDOW_WIDTH * (1 - THRESHOLD)) scroll_x = RIGHT;
-    if (SDL::mouse_x < (float) SDL::WINDOW_WIDTH * THRESHOLD) scroll_x = LEFT;
+    if (SDL::mouse_x > (double) SDL::WINDOW_WIDTH * (1 - THRESHOLD)) scroll_x = RIGHT;
+    if (SDL::mouse_x < (double) SDL::WINDOW_WIDTH * THRESHOLD) scroll_x = LEFT;
 
-    if (SDL::mouse_y > (float) SDL::WINDOW_HEIGHT * (1 - THRESHOLD)) scroll_y = DOWN;
-    if (SDL::mouse_y < (float) SDL::WINDOW_HEIGHT * THRESHOLD) scroll_y = UP;
+    if (SDL::mouse_y > (double) SDL::WINDOW_HEIGHT * (1 - THRESHOLD)) scroll_y = DOWN;
+    if (SDL::mouse_y < (double) SDL::WINDOW_HEIGHT * THRESHOLD) scroll_y = UP;
 
     if (scroll_x == RIGHT) {
-        float scale_factor = 1.0 / (float) (SDL::WINDOW_WIDTH - SDL::mouse_x + 1);
+        double scale_factor = 1.0 / (double) (SDL::WINDOW_WIDTH - SDL::mouse_x + 1);
         Camera::x += std::max(std::min((int) (scale_factor * SCROLL_SPEED), MAX_SCROLL_AMOUNT), MIN_SCROLL_AMOUNT);
     } else if (scroll_x == LEFT) {
-        float scale_factor = 1.0 / (float) (SDL::mouse_x + 1);
+        double scale_factor = 1.0 / (double) (SDL::mouse_x + 1);
         Camera::x -= std::max(std::min((int) (scale_factor * SCROLL_SPEED), MAX_SCROLL_AMOUNT), MIN_SCROLL_AMOUNT);
     }
 
     if (scroll_y == UP) {
-        float scale_factor = 1.0 / (float) (SDL::mouse_y + 1);
+        double scale_factor = 1.0 / (double) (SDL::mouse_y + 1);
         Camera::y -= std::max(std::min((int) (scale_factor * SCROLL_SPEED), MAX_SCROLL_AMOUNT), MIN_SCROLL_AMOUNT);
     } else if (scroll_y == DOWN) {
-        float scale_factor = 1.0 / (float) (SDL::WINDOW_HEIGHT - SDL::mouse_y + 1);
+        double scale_factor = 1.0 / (double) (SDL::WINDOW_HEIGHT - SDL::mouse_y + 1);
         Camera::y += std::max(std::min((int) (scale_factor * SCROLL_SPEED), MAX_SCROLL_AMOUNT), MIN_SCROLL_AMOUNT);
     }
 
@@ -88,6 +93,22 @@ static void keyboard_update()
     clip_camera();
 }
 
+void normalize_zoom()
+{
+    int block_size = _zoom * Game::BLOCK_SIZE;
+    while (width / block_size >= Game::MAP_WIDTH) {
+        _zoom *= 1.0001;
+        block_size = _zoom * Game::BLOCK_SIZE;
+    }
+
+    while (height / block_size >= Game::MAP_HEIGHT) {
+        _zoom *= 1.0001;
+        block_size = _zoom * Game::BLOCK_SIZE;
+    }
+
+    _zoom = std::min(_zoom, 3.0);
+}
+
 void Camera::init(int min_x, int min_y, int max_x, int max_y, int w, int h, Type t)
 {
     MIN_X = min_x;
@@ -96,11 +117,13 @@ void Camera::init(int min_x, int min_y, int max_x, int max_y, int w, int h, Type
     MAX_X = max_x;
     MAX_Y = max_y;
 
-    CAM_W = w;
-    CAM_H = h;
+    width = w;
+    height = h;
 
     Camera::x = 0;
     Camera::y = 0;
+
+    _zoom = 1.0;
 
     if (t == Type::Keyboard)
         update_function = keyboard_update;
@@ -122,7 +145,23 @@ void Camera::set_pos(int x, int y)
 
 void Camera::center_on(int x, int y)
 {
-    Camera::x = x - (int) (float) SDL::WINDOW_WIDTH / 2.0;
-    Camera::y = y - (int) (float) SDL::WINDOW_HEIGHT / 2.0;
+    Camera::x = x - (int) (double) SDL::WINDOW_WIDTH / 2.0;
+    Camera::y = y - (int) (double) SDL::WINDOW_HEIGHT / 2.0;
     clip_camera();
+}
+
+void Camera::zoom(double k)
+{
+    SDL::get_mouse_state();
+    //Camera::x = _zoom * (Camera::x + SDL::mouse_x) / (_zoom + k);
+    //Camera::y = _zoom * (Camera::y + SDL::mouse_y) / (_zoom + k);
+    _zoom += k;
+
+    normalize_zoom();
+    clip_camera();
+}
+
+double Camera::zoom_amount()
+{
+    return _zoom;
 }

@@ -1,4 +1,6 @@
 #include "enemy.hpp"
+#include "camera.hpp"
+#include "game.hpp"
 
 static inline int round_to_closest(int k, int x)
 {
@@ -59,6 +61,26 @@ void Enemy::draw(int x_off, int y_off) const
     sprite.draw(x + x_off, y + y_off);
 }
 
+void Enemy::draw(int x_off, int y_off, double scale) const
+{
+    sprite.draw(x + x_off, y + y_off, scale);
+}
+
+void Enemy::draw() const
+{
+    int xc = (x + 24) / Game::BLOCK_SIZE;
+    int yc = (y + 24) / Game::BLOCK_SIZE;
+    int block_size = Game::BLOCK_SIZE * Camera::zoom_amount();
+    if (direction == Direction::LEFT || direction == Direction::RIGHT)
+        sprite.draw(Camera::zoom_amount() * x - Camera::x,
+                    block_size * yc - Camera::y,
+                    Camera::zoom_amount());
+    else
+        sprite.draw(block_size * xc - Camera::x,
+                    Camera::zoom_amount() * y - Camera::y,
+                    Camera::zoom_amount());
+}
+
 void Enemy::update(const Map& m)
 {
     if (direction == Direction::DOWN)
@@ -70,17 +92,17 @@ void Enemy::update(const Map& m)
     else if (direction == Direction::LEFT)
         x -= speed;
 
-    if (moved > 64)
+    if (moved >= 48)
         moved = 0;
 
     if (moved == 0) {
-	m((y + sprite.get_height() / 2) / 64, (x + sprite.get_width() / 2) /64).affect(*this, m);
+	m((y + sprite.get_height() / 2) / 48, (x + sprite.get_width() / 2) /48).affect(*this, m);
     }
 
     if (direction == Direction::UP || direction == Direction::DOWN)
-        x = round_to_closest(64, x);
+        x = round_to_closest(48, x);
     else
-        y = round_to_closest(64, y);
+        y = round_to_closest(48, y);
 
     moved += speed;
 }
