@@ -54,13 +54,13 @@ int main(int argc, char *argv[])
     srand(time(nullptr));
 
     /* width and height are valid, so we initialize SDL */
-    SDL::init(BLOCK_SIZE * win_width, BLOCK_SIZE * win_height, GAME_TITLE);
+    SDL::init(BLOCK_SIZE * (win_width + 1), BLOCK_SIZE * win_height, GAME_TITLE);
 
     /* load assets */
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/test.map"};
+    Map map {"./maps/one.map"};
 
     /* make sure the window is not bigger than the actual map */
     if (win_width * 0.7 > map.width()) {

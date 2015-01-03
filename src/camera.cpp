@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <cmath>
 
 #include "camera.hpp"
 #include "sdl_wrapper.hpp"
@@ -107,6 +108,9 @@ void normalize_zoom()
     }
 
     _zoom = std::min(_zoom, 3.0);
+
+    if (std::abs(_zoom - 1.0) < 0.03)
+        _zoom = 1.0;
 }
 
 void Camera::init(int min_x, int min_y, int max_x, int max_y, int w, int h, Type t)
