@@ -18,4 +18,5 @@ namespace Camera {
     void set_pos(int x, int y);
     double zoom_amount();
     void zoom(double k);
+    void move_towards(int x, int y);
 }

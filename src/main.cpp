@@ -60,12 +60,12 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/one.map"};
+    Map map {"./maps/test.map"};
 
     /* make sure the window is not bigger than the actual map */
-    if (win_width > map.width()) {
+    if (win_width * 0.7 > map.width()) {
         fprintf(stderr, "Note: Specified width was bigger than the map size. Changing width to %d from %d.\n", map.width(), win_width);
-        win_width = map.width();
+        win_width = 1.434 * map.width();
     }
     if (win_height > map.height()) {
         fprintf(stderr, "Note: Specified height was bigger than the map size. Changing height to %d from %d.\n", map.height(), win_height);

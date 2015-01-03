@@ -10,7 +10,7 @@ static double constexpr THRESHOLD       = 0.4;
 static double constexpr SCROLL_SPEED    = 1000;
 static int constexpr MIN_SCROLL_AMOUNT = 6;
 static int constexpr MAX_SCROLL_AMOUNT = 12;
-static int constexpr KBD_SPEED         = 7;
+static int constexpr KBD_SPEED         = 8;
 
 static void (*update_function)();
 
@@ -150,12 +150,24 @@ void Camera::center_on(int x, int y)
     clip_camera();
 }
 
+void Camera::move_towards(int x, int y)
+{
+    int dx = x * _zoom - width  / 2.0 - Camera::x;
+    int dy = y * _zoom - height / 2.0 - Camera::y;
+
+    dx = std::min(dx, (int) (50 / _zoom));
+    dy = std::min(dy, (int) (50 / _zoom));
+
+    Camera::x += dx;
+    Camera::y += dy;
+
+    clip_camera();
+}
+
 void Camera::zoom(double k)
 {
-    SDL::get_mouse_state();
-
-    int x = (Camera::x + SDL::mouse_x) / _zoom;
-    int y = (Camera::y + SDL::mouse_y) / _zoom;
+    int x = (Camera::x + width / 2) / _zoom;
+    int y = (Camera::y + height / 2) / _zoom;
 
     _zoom += k;
     normalize_zoom();
