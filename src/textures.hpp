@@ -17,7 +17,6 @@ namespace Textures {
     extern SDL::texture_handle TOWER_BASE_SIMPLE;
     extern SDL::texture_handle TOWER_CANNON_SIMPLE;
     extern SDL::texture_handle PROJECTILE_SIMPLE;
-    /*** ........ ***/
     /****************/
 
 

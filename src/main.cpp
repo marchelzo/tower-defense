@@ -20,9 +20,10 @@
 
 static TowerUpdate standard_tower_update {[](Tower& t, const std::vector<Enemy>& es, std::vector<Projectile>& ps){
     for (auto& e : es) {
+        if (!e.is_alive()) continue;
         int dx = t.get_x() - e.get_x();
         int dy = t.get_y() - e.get_y();
-        if (sqrt(dx*dx + dy*dy) < 400) {
+        if (sqrt(dx*dx + dy*dy) < 200) {
             t.shoot(dx, dy, ps);
             break;
         }
@@ -131,6 +132,18 @@ int main(int argc, char *argv[])
             p.update();
 
         t.update(es, ps);
+
+        /* check for collisions between enemies and projectiles */
+        for (auto& e : es) {
+            int ex = e.get_x();
+            int ey = e.get_y();
+            for (auto& p : ps) {
+               int dx = ex - p.get_x();
+               int dy = ey - p.get_y();
+               if (sqrt(dx*dx + dy*dy) < Game::BLOCK_SIZE / 2 - 5)
+                   p.affect(e);
+            }
+        }
 
         Camera::update();
 
