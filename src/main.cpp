@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     Player::init(99999, 1000);
 
     std::vector<Enemy> es;
-    map.spawn_enemies(1, es);
+    map.spawn_enemies(3, es);
 
     std::vector<Projectile> ps;
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     Sprite bullet {Textures::PROJECTILE_SIMPLE};
     Sprite cannon {Textures::TOWER_CANNON_SIMPLE};
 
-    Tower t {base, cannon, bullet, [](Enemy& e){ e.kill(); }, 10.0, 3.0, standard_tower_update, 4, 5};
+    Tower t {base, cannon, bullet, [](Enemy& e){ e.kill(); }, 2.0, 3.0, standard_tower_update, 4, 5};
 
     /* game loop */
     while (Player::hp > 0) {
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
         /* render output */
         SDL::render_clear();
 
-        int block_size = Camera::zoom_amount() * BLOCK_SIZE;
+        int block_size = Camera::zoom_amount() * Game::BLOCK_SIZE;
         int x_off = Camera::x % block_size;
         int y_off = Camera::y % block_size;
 
