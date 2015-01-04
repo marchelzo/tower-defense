@@ -15,6 +15,19 @@
 #include "map.hpp"
 #include "player.hpp"
 #include "game.hpp"
+#include "tower.hpp"
+#include "projectile.hpp"
+
+static TowerUpdate standard_tower_update {[](Tower& t, const std::vector<Enemy>& es, std::vector<Projectile>& ps){
+    for (auto& e : es) {
+        int dx = t.get_x() - e.get_x();
+        int dy = t.get_y() - e.get_y();
+        if (sqrt(dx*dx + dy*dy) < 400) {
+            t.shoot(dx, dy, ps);
+            break;
+        }
+    }
+}};
 
 /* some constants */
 static int constexpr MIN_WIN_WIDTH  = 8;
@@ -60,7 +73,7 @@ int main(int argc, char *argv[])
     Textures::load();
 
     /* load the map */
-    Map map {"./maps/one.map"};
+    Map map {"./maps/test.map"};
 
     /* make sure the window is not bigger than the actual map */
     if (win_width * 0.7 > map.width()) {
@@ -86,10 +99,17 @@ int main(int argc, char *argv[])
     std::vector<Enemy> es;
     map.spawn_enemies(1, es);
 
+    std::vector<Projectile> ps;
+
     /* create an SDL_Event for polling events */
     SDL_Event e;
 
     Sprite grass {Textures::GRASS_TEXTURE};
+    Sprite base {Textures::TOWER_BASE_SIMPLE};
+    Sprite bullet {Textures::PROJECTILE_SIMPLE};
+    Sprite cannon {Textures::TOWER_CANNON_SIMPLE};
+
+    Tower t {base, cannon, bullet, [](Enemy& e){ e.kill(); }, 10.0, 3.0, standard_tower_update, 4, 5};
 
     /* game loop */
     while (Player::hp > 0) {
@@ -106,6 +126,11 @@ int main(int argc, char *argv[])
 	for (auto& e : es)
             if (e.is_alive())
                 e.update(map);
+
+        for (auto& p : ps)
+            p.update();
+
+        t.update(es, ps);
 
         Camera::update();
 
@@ -142,12 +167,16 @@ int main(int argc, char *argv[])
             if (e.is_alive())
                 e.draw();
 
+        for (auto& p : ps)
+            p.draw();
+        
+        t.draw();
+
         SDL_Rect r = { Camera::width, 0, SDL::WINDOW_WIDTH - Camera::width, SDL::WINDOW_HEIGHT };
         SDL::render_rect(&r, 102, 49, 60, 255);
 
         SDL::render_present();
     }
-
 
 end: /* clean up and quit */
     SDL::quit();

@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "enemy.hpp"
 #include "camera.hpp"
 #include "game.hpp"
@@ -26,12 +28,12 @@ Enemy::Enemy(Sprite sprite, int damage, int x, int y, int speed):
 
 int Enemy::get_x() const
 {
-    return x + sprite.get_width() / 2;
+    return x + Game::BLOCK_SIZE / 2;
 }
 
 int Enemy::get_y() const
 {
-    return y + sprite.get_height() / 2;
+    return y + Game::BLOCK_SIZE / 2;
 }
 
 void Enemy::set_direction(Direction d)

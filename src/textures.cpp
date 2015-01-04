@@ -9,6 +9,9 @@ SDL::texture_handle Textures::SAND_4WAY_TEXTURE;
 SDL::texture_handle Textures::HOME_TEXTURE;
 SDL::texture_handle Textures::SPAWN_TEXTURE;
 SDL::texture_handle Textures::RED_SPHERE;
+SDL::texture_handle Textures::TOWER_BASE_SIMPLE;
+SDL::texture_handle Textures::TOWER_CANNON_SIMPLE;
+SDL::texture_handle Textures::PROJECTILE_SIMPLE;
 
 /* load all of the textures and texture sequences use in the game */
 void Textures::load()
@@ -21,4 +24,7 @@ void Textures::load()
     Textures::HOME_TEXTURE        = SDL::load_texture("./assets/home_tile.png");
     Textures::SPAWN_TEXTURE       = SDL::load_texture("./assets/spawn_tile.png");
     Textures::RED_SPHERE          = SDL::load_texture("./assets/red_sphere.png");
+    Textures::TOWER_BASE_SIMPLE   = SDL::load_texture("./assets/simple_tower_base.png");
+    Textures::TOWER_CANNON_SIMPLE = SDL::load_texture("./assets/simple_tower_cannon.png");
+    Textures::PROJECTILE_SIMPLE   = SDL::load_texture("./assets/simple_projectile.png");
 }

@@ -45,6 +45,7 @@ namespace SDL {
     extern int WINDOW_HEIGHT;
     extern int mouse_x;
     extern int mouse_y;
+    extern int64_t frame_count;
     void get_mouse_state();
     void render_clear();
     void render_present();

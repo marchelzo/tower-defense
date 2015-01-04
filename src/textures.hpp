@@ -14,6 +14,9 @@ namespace Textures {
     extern SDL::texture_handle HOME_TEXTURE;
     extern SDL::texture_handle SPAWN_TEXTURE;
     extern SDL::texture_handle RED_SPHERE;
+    extern SDL::texture_handle TOWER_BASE_SIMPLE;
+    extern SDL::texture_handle TOWER_CANNON_SIMPLE;
+    extern SDL::texture_handle PROJECTILE_SIMPLE;
     /*** ........ ***/
     /****************/
 

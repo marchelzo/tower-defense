@@ -66,10 +66,11 @@ int Animation::width() const { return texture_width(texture_sequences[ts].first_
 int Animation::height() const { return texture_height(texture_sequences[ts].first_frame_id + _current_frame); }
 /********************************/
 
-int SDL::WINDOW_WIDTH;
-int SDL::WINDOW_HEIGHT;
-int SDL::mouse_x;
-int SDL::mouse_y;
+int      SDL::WINDOW_WIDTH;
+int      SDL::WINDOW_HEIGHT;
+int      SDL::mouse_x;
+int      SDL::mouse_y;
+int64_t SDL::frame_count;
 
 
 /* TTF Font pointers for big and small versions of Mesmerize */
@@ -166,6 +167,7 @@ void SDL::render_clear()
 
 void SDL::render_present()
 {
+    ++SDL::frame_count;
     SDL_RenderPresent(renderer);
 }
 
