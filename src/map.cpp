@@ -10,6 +10,7 @@
 #include "textures.hpp"
 #include "enemy.hpp"
 #include "player.hpp"
+#include "game.hpp"
 
 static bool sprites_loaded;
 
@@ -282,10 +283,12 @@ int Map::height() const
     return tiles.size();
 }
 
-void Map::spawn_enemies(int n, std::vector<Enemy>& es)
+std::function<Enemy()> Map::make_enemy_spawner(const Sprite& sprite, int damage, int speed, int hp)
 {
-    while (n --> 0) {
-	coord c = spawns[rand() % spawns.size()];
-	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 48, c.y * 48, 1, 100);
-    }
+    const std::vector<coord>& spawns_ref = spawns;
+
+    return [=, &spawns_ref](){
+	coord s = spawns[rand() % spawns.size()];
+	return Enemy(sprite, damage, s.x * Game::BLOCK_SIZE, s.y * Game::BLOCK_SIZE, speed, hp);
+    };
 }

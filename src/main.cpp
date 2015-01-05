@@ -17,6 +17,7 @@
 #include "game.hpp"
 #include "tower.hpp"
 #include "projectile.hpp"
+#include "level.hpp"
 
 static TowerUpdate standard_tower_update {[](Tower& t, const std::vector<Enemy>& es, std::vector<Projectile>& ps){
     for (auto& e : es) {
@@ -98,7 +99,9 @@ int main(int argc, char *argv[])
     Player::init(99999, 1000);
 
     std::vector<Enemy> es;
-    map.spawn_enemies(23, es);
+    std::vector<Wave> waves;
+    waves.emplace_back(10, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 1.5, 0.0);
+    Level level {waves};
 
     std::vector<Projectile> ps;
 
@@ -124,6 +127,8 @@ int main(int argc, char *argv[])
                     Camera::zoom(e.wheel.y * 0.1);
             }
         }
+
+	level.spawn(es);
 
         /* update enemies */
 	for (auto& e : es)

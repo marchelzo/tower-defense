@@ -19,5 +19,5 @@ public:
     const Tile& operator()(int, int) const;
     int width() const;
     int height() const;
-    void spawn_enemies(int n, std::vector<Enemy>& es);
+    std::function<Enemy()> make_enemy_spawner(const Sprite& sprite, int damage, int speed, int hp);
 };
