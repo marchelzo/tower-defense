@@ -96,11 +96,12 @@ int main(int argc, char *argv[])
     Camera::init(0, 0, map.width() * BLOCK_SIZE - 1, map.height() * BLOCK_SIZE - 1,
             (int) (SDL::WINDOW_WIDTH * 0.7), SDL::WINDOW_HEIGHT, Camera::Type::Keyboard);
 
-    Player::init(99999, 1000);
+    Player::init(100, 1000);
 
     std::vector<Enemy> es;
     std::vector<Wave> waves;
-    waves.emplace_back(10, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 1.5, 0.0);
+    waves.emplace_back(20, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 0.3, 6.0);
+    waves.emplace_back(100, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 0.3, 0.0);
     Level level {waves};
 
     std::vector<Projectile> ps;
@@ -114,8 +115,8 @@ int main(int argc, char *argv[])
     Sprite cannon {Textures::TOWER_CANNON_SIMPLE};
 
     std::vector<Tower> ts;
-    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.kill(); }, 20.0, 3.0, standard_tower_update, 4, 5);
-    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.kill(); }, 5.0, 5.0, standard_tower_update, 6, 5);
+    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.damage(10); }, 20.0, 2.0, standard_tower_update, 4, 5);
+    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.damage(10); }, 20.0, 2.0, standard_tower_update, 6, 5);
 
     /* game loop */
     while (Player::hp > 0) {

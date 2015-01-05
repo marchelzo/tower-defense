@@ -13,11 +13,11 @@ static inline int round_to_closest(int k, int x)
 
 }
 
-Enemy::Enemy(Sprite sprite, int damage, int x, int y, int speed, int hp):
+Enemy::Enemy(Sprite sprite, int power, int x, int y, int speed, int hp):
     sprite                {sprite},
     direction             {Direction::NONE},
     speed                 {speed},
-    damage                {damage},
+    _power                {power},
     x                     {x},
     y                     {y},
     hp			  {hp},
@@ -86,6 +86,14 @@ void Enemy::draw() const
 
 void Enemy::update(const Map& m)
 {
+    /* if the enemy has no hp left, just kill it and don't bother
+     * with computing its position
+     */
+    if (hp <= 0) {
+	alive = false;
+	return;
+    }
+
     if (direction == Direction::DOWN)
         y += speed;
     else if (direction == Direction::UP)
@@ -117,7 +125,7 @@ bool Enemy::is_alive() const
 
 int Enemy::power() const
 {
-    return damage;
+    return _power;
 }
 
 void Enemy::kill()
@@ -135,7 +143,7 @@ bool Enemy::must_turn() const
     return must_change_direction;
 }
 
-void Enemy::take_damage(int k)
+void Enemy::damage(int k)
 {
     hp -= k;
 }

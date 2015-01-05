@@ -14,14 +14,14 @@ class Enemy {
     Direction direction;
     int hp;
     int speed;
-    const int damage;
+    const int _power;
     int x;
     int y;
     int moved;
     bool alive;
     bool must_change_direction;
 public:
-    Enemy(Sprite sprite, int damage, int x, int y, int speed, int hp);
+    Enemy(Sprite sprite, int power, int x, int y, int speed, int hp);
     void set_direction(Direction);
     void turn_around();
     Direction get_direction() const;
@@ -36,5 +36,5 @@ public:
     void kill();
     void force_next_turn();
     bool must_turn() const;
-    void take_damage(int amount);
+    void damage(int amount);
 };

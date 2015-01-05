@@ -11,10 +11,14 @@ typedef std::function<Enemy()> SpawnFunction;
 
 struct Wave {
     int num_enemies;
+    int num_per_spawn;
     SpawnFunction spawn;
     double time_between_enemies;
     double delay_after_wave;
-    Wave(int num_enemies, SpawnFunction spawn, double time_between_enemies,
+    Wave(int num_enemies,
+	 int num_per_spawn,
+	 SpawnFunction spawn,
+	 double time_between_enemies,
 	 double delay_after_wave);
 };
 
