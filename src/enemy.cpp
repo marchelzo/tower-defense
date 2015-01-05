@@ -13,13 +13,14 @@ static inline int round_to_closest(int k, int x)
 
 }
 
-Enemy::Enemy(Sprite sprite, int damage, int x, int y, int speed):
+Enemy::Enemy(Sprite sprite, int damage, int x, int y, int speed, int hp):
     sprite                {sprite},
     direction             {Direction::NONE},
     speed                 {speed},
     damage                {damage},
     x                     {x},
     y                     {y},
+    hp			  {hp},
     moved                 {0},
     alive                 {true},
     must_change_direction {false}
@@ -132,4 +133,9 @@ void Enemy::force_next_turn()
 bool Enemy::must_turn() const
 {
     return must_change_direction;
+}
+
+void Enemy::take_damage(int k)
+{
+    hp -= k;
 }

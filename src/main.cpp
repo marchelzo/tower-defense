@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     Player::init(99999, 1000);
 
     std::vector<Enemy> es;
-    map.spawn_enemies(3, es);
+    map.spawn_enemies(23, es);
 
     std::vector<Projectile> ps;
 
@@ -110,7 +110,9 @@ int main(int argc, char *argv[])
     Sprite bullet {Textures::PROJECTILE_SIMPLE};
     Sprite cannon {Textures::TOWER_CANNON_SIMPLE};
 
-    Tower t {base, cannon, bullet, [](Enemy& e){ e.kill(); }, 2.0, 3.0, standard_tower_update, 4, 5};
+    std::vector<Tower> ts;
+    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.kill(); }, 20.0, 3.0, standard_tower_update, 4, 5);
+    ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.kill(); }, 5.0, 5.0, standard_tower_update, 6, 5);
 
     /* game loop */
     while (Player::hp > 0) {
@@ -131,7 +133,8 @@ int main(int argc, char *argv[])
         for (auto& p : ps)
             p.update();
 
-        t.update(es, ps);
+	for (auto& t : ts)
+	    t.update(es, ps);
 
         /* check for collisions between enemies and projectiles */
         for (auto& e : es) {
@@ -183,7 +186,8 @@ int main(int argc, char *argv[])
         for (auto& p : ps)
             p.draw();
         
-        t.draw();
+	for (auto& t : ts)
+	    t.draw();
 
         SDL_Rect r = { Camera::width, 0, SDL::WINDOW_WIDTH - Camera::width, SDL::WINDOW_HEIGHT };
         SDL::render_rect(&r, 102, 49, 60, 255);

@@ -21,7 +21,7 @@ class Enemy {
     bool alive;
     bool must_change_direction;
 public:
-    Enemy(Sprite sprite, int damage, int x, int y, int speed);
+    Enemy(Sprite sprite, int damage, int x, int y, int speed, int hp);
     void set_direction(Direction);
     void turn_around();
     Direction get_direction() const;
@@ -36,4 +36,5 @@ public:
     void kill();
     void force_next_turn();
     bool must_turn() const;
+    void take_damage(int amount);
 };

@@ -286,6 +286,6 @@ void Map::spawn_enemies(int n, std::vector<Enemy>& es)
 {
     while (n --> 0) {
 	coord c = spawns[rand() % spawns.size()];
-	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 48, c.y * 48, 1);
+	es.emplace_back(Sprite{Textures::RED_SPHERE}, 40, c.x * 48, c.y * 48, 1, 100);
     }
 }
