@@ -100,8 +100,8 @@ int main(int argc, char *argv[])
 
     std::vector<Enemy> es;
     std::vector<Wave> waves;
-    waves.emplace_back(20, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 0.3, 6.0);
-    waves.emplace_back(100, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 40, 3, 20), 0.3, 0.0);
+    waves.emplace_back(20, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 10, 3, 20), 0.3, 6.0);
+    waves.emplace_back(100, 2, map.make_enemy_spawner(Sprite{Textures::RED_SPHERE}, 10, 3, 20), 0.3, 0.0);
     Level level {waves};
 
     std::vector<Projectile> ps;

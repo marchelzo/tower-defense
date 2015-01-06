@@ -285,9 +285,7 @@ int Map::height() const
 
 std::function<Enemy()> Map::make_enemy_spawner(const Sprite& sprite, int damage, int speed, int hp)
 {
-    const std::vector<coord>& spawns_ref = spawns;
-
-    return [=, &spawns_ref](){
+    return [=](){
 	coord s = spawns[rand() % spawns.size()];
 	return Enemy(sprite, damage, s.x * Game::BLOCK_SIZE, s.y * Game::BLOCK_SIZE, speed, hp);
     };
