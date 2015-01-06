@@ -1,29 +1,48 @@
 #include <utility>
+#include <vector>
 
 #include "interface.hpp"
 
 Interface::Button::Button(Sprite sprite,
        Action on_click,
        Action on_hover, int x, int y):
-    sprite   {sprite},
-    on_click {on_click},
-    on_hover {on_hover},
-    x        {x},
-    y        {y}
+    sprite       {sprite},
+    on_click     {on_click},
+    on_hover     {on_hover},
+    x            {x},
+    y            {y}
 {
 }
 
-Interface::Interface(int w, int h, int x, int y):
-    width  {w},
-    height {h},
-    x      {x},
-    y      {y}
+Interface::Interface(int w, int h, int x, int y, const Sprite& button_bg):
+    width        {w},
+    height       {h},
+    x            {x},
+    y            {y},
+    button_bg    {button_bg},
+    padding_top  {20},
+    padding_left {20}
 {
 }
 
 void Interface::add_button(Sprite sprite, Action on_click, Action on_hover)
 {
-    buttons.emplace_back(sprite, on_click, on_hover);
+    int x, y;
+
+    if (buttons.size() == 0) {
+	x = padding_left;
+	y = padding_top;
+    } else {
+	x = buttons.back().x + Button::size + padding_left;
+	y = buttons.back().y;
+
+	if (x + Button::size + padding_left > width) {
+	    x = padding_left;
+	    y += Button::size + padding_top;
+	}
+    }
+
+    buttons.emplace_back(sprite, on_click, on_hover, x, y);
 }
 
 void Interface::click_event(int x, int y)
@@ -55,4 +74,28 @@ void Interface::update()
             }
         }
     }
+}
+
+void Interface::draw() const
+{
+    for (auto& b : buttons) {
+	b.sprite.draw(b.x + x, b.y + y);
+	button_bg.draw(b.x + x, b.y + y);
+    }
+}
+
+void Interface::set_padding_top(int k)
+{
+    int dp = k - padding_top;
+    for (auto& b : buttons)
+	b.y += k;
+    padding_top = k;
+}
+
+void Interface::set_padding_left(int k)
+{
+    int dp = k - padding_left;
+    for (auto& b : buttons)
+	b.x += k;
+    padding_left = k;
 }

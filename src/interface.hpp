@@ -38,10 +38,16 @@ class Interface {
     int height;
     int x;
     int y;
+    const Sprite& button_bg;
+    int padding_top;
+    int padding_left;
 public:
-    Interface(int w, int h, int x, int y);
+    Interface(int w, int h, int x, int y, const Sprite& button_bg);
     void add_button(Sprite sprite, Action on_click,
                     Action on_hover);
     void click_event(int x, int y);
     void update();
+    void draw() const;
+    void set_padding_left(int k);
+    void set_padding_top(int k);
 };

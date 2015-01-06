@@ -12,6 +12,7 @@ SDL::texture_handle Textures::RED_SPHERE;
 SDL::texture_handle Textures::TOWER_BASE_SIMPLE;
 SDL::texture_handle Textures::TOWER_CANNON_SIMPLE;
 SDL::texture_handle Textures::PROJECTILE_SIMPLE;
+SDL::texture_handle Textures::BUTTON_BORDER;
 
 /* load all of the textures and texture sequences use in the game */
 void Textures::load()
@@ -27,4 +28,5 @@ void Textures::load()
     Textures::TOWER_BASE_SIMPLE   = SDL::load_texture("./assets/simple_tower_base.png");
     Textures::TOWER_CANNON_SIMPLE = SDL::load_texture("./assets/simple_tower_cannon.png");
     Textures::PROJECTILE_SIMPLE   = SDL::load_texture("./assets/simple_projectile.png");
+    Textures::BUTTON_BORDER       = SDL::load_texture("./assets/button_border.png");
 }
