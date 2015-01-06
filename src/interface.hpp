@@ -41,6 +41,8 @@ class Interface {
     const Sprite& button_bg;
     int padding_top;
     int padding_left;
+    int vert_padding;
+    int horiz_padding;
 public:
     Interface(int w, int h, int x, int y, const Sprite& button_bg);
     void add_button(Sprite sprite, Action on_click,
@@ -50,4 +52,6 @@ public:
     void draw() const;
     void set_padding_left(int k);
     void set_padding_top(int k);
+    void set_horizontal_padding(int k);
+    void set_vertical_padding(int k);
 };

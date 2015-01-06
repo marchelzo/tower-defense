@@ -15,13 +15,15 @@ Interface::Button::Button(Sprite sprite,
 }
 
 Interface::Interface(int w, int h, int x, int y, const Sprite& button_bg):
-    width        {w},
-    height       {h},
-    x            {x},
-    y            {y},
-    button_bg    {button_bg},
-    padding_top  {20},
-    padding_left {20}
+    width         {w},
+    height        {h},
+    x             {x},
+    y             {y},
+    button_bg     {button_bg},
+    padding_top   {20},
+    padding_left  {20},
+    horiz_padding {20},
+    vert_padding  {20}
 {
 }
 
@@ -33,12 +35,12 @@ void Interface::add_button(Sprite sprite, Action on_click, Action on_hover)
 	x = padding_left;
 	y = padding_top;
     } else {
-	x = buttons.back().x + Button::size + padding_left;
+	x = buttons.back().x + Button::size + horiz_padding;
 	y = buttons.back().y;
 
-	if (x + Button::size + padding_left > width) {
+	if (x + Button::size + horiz_padding > width) {
 	    x = padding_left;
-	    y += Button::size + padding_top;
+	    y += Button::size + vert_padding;
 	}
     }
 
@@ -98,4 +100,20 @@ void Interface::set_padding_left(int k)
     for (auto& b : buttons)
 	b.x += k;
     padding_left = k;
+}
+
+void Interface::set_vertical_padding(int k)
+{
+    int dp = k - vert_padding;
+    for (auto& b : buttons)
+	b.y += dp;
+    vert_padding = k;
+}
+
+void Interface::set_horizontal_padding(int k)
+{
+    int dp = k - horiz_padding;
+    for (auto& b : buttons)
+	b.x += dp;
+    horiz_padding = k;
 }

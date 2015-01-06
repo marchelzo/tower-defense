@@ -124,12 +124,15 @@ int main(int argc, char *argv[])
     grs.scale(0.8);
     Sprite button_bg {Textures::BUTTON_BORDER};
     Interface ifc {static_cast<int>( SDL::WINDOW_WIDTH * 0.3), SDL::WINDOW_HEIGHT, static_cast<int>( SDL::WINDOW_WIDTH * 0.7), 0, button_bg};
+    ifc.set_padding_top(120);
+    ifc.set_padding_left(10);
+    ifc.set_horizontal_padding(10);
+    ifc.set_vertical_padding(30);
     ifc.add_button(grass, [](){ std::cout << "1" << std::endl; }, [](){});
     ifc.add_button(grass, [](){ std::cout << "2" << std::endl; }, [](){});
     ifc.add_button(grass, [](){ std::cout << "3" << std::endl; }, [](){});
     ifc.add_button(grass, [](){ std::cout << "4" << std::endl; }, [](){});
     ifc.add_button(grass, [](){ std::cout << "5" << std::endl; }, [](){});
-    ifc.set_padding_top(120);
 
     /* game loop */
     while (Player::hp > 0) {
