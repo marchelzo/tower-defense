@@ -19,7 +19,7 @@
 #include "tower.hpp"
 #include "projectile.hpp"
 #include "level.hpp"
-#include "interface.hpp"
+#include "ui.hpp"
 
 static TowerUpdate standard_tower_update {[](Tower& t, const std::vector<Enemy>& es, std::vector<Projectile>& ps){
     for (auto& e : es) {
@@ -79,6 +79,9 @@ int main(int argc, char *argv[])
     /* load the map */
     Map map {"./maps/one.map"};
 
+    /* load sprites and construct menus for the UI */
+    UserInterface::init();
+
     /* make sure the window is not bigger than the actual map */
     if (win_width * 0.7 > map.width()) {
         fprintf(stderr, "Note: Specified width was bigger than the map size. Changing width to %d from %d.\n", map.width(), win_width);
@@ -120,20 +123,6 @@ int main(int argc, char *argv[])
     ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.damage(10); }, 20.0, 2.0, standard_tower_update, 4, 5);
     ts.emplace_back(base, cannon, bullet, [](Enemy& e){ e.damage(10); }, 20.0, 2.0, standard_tower_update, 6, 5);
 
-    Sprite grs {grass};
-    grs.scale(0.8);
-    Sprite button_bg {Textures::BUTTON_BORDER};
-    Interface ifc {static_cast<int>( SDL::WINDOW_WIDTH * 0.3), SDL::WINDOW_HEIGHT, static_cast<int>( SDL::WINDOW_WIDTH * 0.7), 0, button_bg};
-    ifc.set_padding_top(120);
-    ifc.set_padding_left(10);
-    ifc.set_horizontal_padding(10);
-    ifc.set_vertical_padding(30);
-    ifc.add_button(grass, [](){ std::cout << "1" << std::endl; }, [](){});
-    ifc.add_button(grass, [](){ std::cout << "2" << std::endl; }, [](){});
-    ifc.add_button(grass, [](){ std::cout << "3" << std::endl; }, [](){});
-    ifc.add_button(grass, [](){ std::cout << "4" << std::endl; }, [](){});
-    ifc.add_button(grass, [](){ std::cout << "5" << std::endl; }, [](){});
-
     /* game loop */
     while (Player::hp > 0) {
         /* handle input */
@@ -144,7 +133,7 @@ int main(int argc, char *argv[])
                     Camera::zoom(e.wheel.y * 0.1);
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
 		SDL::get_mouse_state();
-		ifc.click_event(SDL::mouse_x, SDL::mouse_y);
+		UserInterface::click_event(SDL::mouse_x, SDL::mouse_y);
 	    }
         }
 
@@ -174,7 +163,7 @@ int main(int argc, char *argv[])
         }
 
         Camera::update();
-	ifc.update();
+	UserInterface::update();
 
         /* render output */
         SDL::render_clear();
@@ -218,7 +207,7 @@ int main(int argc, char *argv[])
         SDL_Rect r = { Camera::width, 0, SDL::WINDOW_WIDTH - Camera::width, SDL::WINDOW_HEIGHT };
         SDL::render_rect(&r, 102, 49, 60, 255);
 
-	ifc.draw();
+	UserInterface::draw();
 
         SDL::render_present();
     }
